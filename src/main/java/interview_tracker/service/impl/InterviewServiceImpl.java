@@ -1,14 +1,18 @@
 package interview_tracker.service.impl;
 
-
+import interview_tracker.entity.InterviewMode;
+import interview_tracker.entity.InterviewStatus;
+import interview_tracker.exception.InterviewNotFoundException;
 import interview_tracker.dto.InterviewRequest;
+import interview_tracker.dto.InterviewResponse;
 import interview_tracker.entity.Interview;
 import interview_tracker.repository.InterviewRepository;
 import interview_tracker.service.InterviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +21,8 @@ public class InterviewServiceImpl implements InterviewService {
     private final InterviewRepository interviewRepository;
 
     @Override
-    public Interview createInterview(InterviewRequest request) {
+    public InterviewResponse createInterview(
+            InterviewRequest request) {
 
         Interview interview = Interview.builder()
                 .candidateName(request.getCandidateName())
@@ -33,32 +38,60 @@ public class InterviewServiceImpl implements InterviewService {
                 .remarks(request.getRemarks())
                 .build();
 
-        return interviewRepository.save(interview);
+        return mapToResponse(
+                interviewRepository.save(interview)
+        );
     }
 
     @Override
-    public List<Interview> getAllInterviews() {
-        return interviewRepository.findAll();
+    public Page<InterviewResponse> getAllInterviews(
+            int page,
+            int size,
+            String sortBy,
+            String direction) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable =
+                PageRequest.of(page, size, sort);
+
+        return interviewRepository
+                .findAll(pageable)
+                .map(this::mapToResponse);
     }
 
     @Override
-    public Interview getInterviewById(Long id) {
+    public InterviewResponse getInterviewById(Long id) {
 
-        return interviewRepository.findById(id)
+        Interview interview = interviewRepository
+                .findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Interview not found with id: " + id));
+                        new InterviewNotFoundException(
+                                "Interview not found with id: " + id
+                        ));
+
+        return mapToResponse(interview);
     }
 
     @Override
-    public Interview updateInterview(Long id, InterviewRequest request) {
+    public InterviewResponse updateInterview(
+            Long id,
+            InterviewRequest request) {
 
-        Interview interview = interviewRepository.findById(id)
+        Interview interview = interviewRepository
+                .findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Interview not found with id: " + id));
+                        new InterviewNotFoundException(
+                                "Interview not found with id: " + id
+                        ));
 
         interview.setCandidateName(request.getCandidateName());
         interview.setCompanyName(request.getCompanyName());
-        interview.setInterviewSupporter(request.getInterviewSupporter());
+        interview.setInterviewSupporter(
+                request.getInterviewSupporter()
+        );
         interview.setInterviewDate(request.getInterviewDate());
         interview.setInterviewTime(request.getInterviewTime());
         interview.setRound(request.getRound());
@@ -68,16 +101,129 @@ public class InterviewServiceImpl implements InterviewService {
         interview.setFeedback(request.getFeedback());
         interview.setRemarks(request.getRemarks());
 
-        return interviewRepository.save(interview);
+        return mapToResponse(
+                interviewRepository.save(interview)
+        );
     }
 
     @Override
     public void deleteInterview(Long id) {
 
-        Interview interview = interviewRepository.findById(id)
+        Interview interview = interviewRepository
+                .findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Interview not found with id: " + id));
+                        new InterviewNotFoundException(
+                                "Interview not found with id: " + id
+                        ));
 
         interviewRepository.delete(interview);
+    }
+
+    @Override
+    public Page<InterviewResponse> searchByCandidate(
+            String candidateName,
+            int page,
+            int size) {
+
+        Pageable pageable =
+                PageRequest.of(page, size);
+
+        return interviewRepository
+                .findByCandidateNameContainingIgnoreCase(
+                        candidateName,
+                        pageable
+                )
+                .map(this::mapToResponse);
+    }
+
+    @Override
+    public Page<InterviewResponse> searchByCompany(
+            String companyName,
+            int page,
+            int size) {
+
+        Pageable pageable =
+                PageRequest.of(page, size);
+
+        return interviewRepository
+                .findByCompanyNameContainingIgnoreCase(
+                        companyName,
+                        pageable
+                )
+                .map(this::mapToResponse);
+    }
+
+
+
+    @Override
+    public Page<InterviewResponse> filterByStatus(
+            InterviewStatus status,
+            int page,
+            int size) {
+
+        Pageable pageable =
+                PageRequest.of(page, size);
+
+        return interviewRepository
+                .findByStatus(status, pageable)
+                .map(this::mapToResponse);
+    }
+
+    @Override
+    public Page<InterviewResponse> filterByMode(
+            InterviewMode mode,
+            int page,
+            int size) {
+
+        Pageable pageable =
+                PageRequest.of(page, size);
+
+        return interviewRepository
+                .findByMode(mode, pageable)
+                .map(this::mapToResponse);
+    }
+
+
+    //Date Filter Logic
+    @Override
+    public Page<InterviewResponse> filterByDate(
+            LocalDate startDate,
+            LocalDate endDate,
+            int page,
+            int size) {
+
+        Pageable pageable =
+                PageRequest.of(page, size);
+
+        return interviewRepository
+                .findByInterviewDateBetween(
+                        startDate,
+                        endDate,
+                        pageable
+                )
+                .map(this::mapToResponse);
+    }
+
+    private InterviewResponse mapToResponse(
+            Interview interview) {
+
+        return InterviewResponse.builder()
+                .id(interview.getId())
+                .candidateName(interview.getCandidateName())
+                .companyName(interview.getCompanyName())
+                .interviewSupporter(
+                        interview.getInterviewSupporter()
+                )
+                .interviewDate(interview.getInterviewDate())
+                .interviewTime(interview.getInterviewTime())
+                .round(interview.getRound())
+                .role(interview.getRole())
+                .mode(interview.getMode())
+                .status(interview.getStatus())
+                .feedback(interview.getFeedback())
+                .remarks(interview.getRemarks())
+                .createdAt(interview.getCreatedAt())
+                .updatedAt(interview.getUpdatedAt())
+                .build();
     }
 }

@@ -38,9 +38,15 @@ public class Interview {
 
     private String role;
 
-    private String mode;
+   // private String mode;
 
-    private String status;
+    //private String status;
+
+    @Enumerated(EnumType.STRING)
+    private InterviewMode mode;
+
+    @Enumerated(EnumType.STRING)
+    private InterviewStatus status;
 
     @Column(length = 2000)
     private String feedback;
@@ -62,5 +68,7 @@ public class Interview {
     @PreUpdate
     public void preUpdate() {
         updatedAt = LocalDateTime.now();
+
+
     }
 }

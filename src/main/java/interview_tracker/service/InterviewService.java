@@ -4,20 +4,71 @@ package interview_tracker.service;
 
 
 
-import interview_tracker.dto.InterviewRequest;
-import interview_tracker.entity.Interview;
 
-import java.util.List;
+import interview_tracker.dto.InterviewRequest;
+import interview_tracker.dto.InterviewResponse;
+import interview_tracker.entity.InterviewMode;
+import interview_tracker.entity.InterviewStatus;
+import org.springframework.data.domain.Page;
+
+import java.time.LocalDate;
 
 public interface InterviewService {
 
-    Interview createInterview(InterviewRequest request);
+    InterviewResponse createInterview(InterviewRequest request);
 
-    List<Interview> getAllInterviews();
+    Page<InterviewResponse> getAllInterviews(
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    );
 
-    Interview getInterviewById(Long id);
+    InterviewResponse getInterviewById(Long id);
 
-    Interview updateInterview(Long id, InterviewRequest request);
+    InterviewResponse updateInterview(
+            Long id,
+            InterviewRequest request
+    );
 
     void deleteInterview(Long id);
+
+    Page<InterviewResponse> searchByCandidate(
+            String candidateName,
+            int page,
+            int size
+    );
+
+    Page<InterviewResponse> searchByCompany(
+            String companyName,
+            int page,
+            int size
+    );
+
+//    Page<InterviewResponse> filterByStatus(
+//            String status,
+//            int page,
+//            int size
+//    );
+
+    Page<InterviewResponse> filterByStatus(
+            InterviewStatus status,
+            int page,
+            int size
+    );
+
+    Page<InterviewResponse> filterByMode(
+            InterviewMode mode,
+            int page,
+            int size
+    );
+
+    Page<InterviewResponse> filterByDate(
+            LocalDate startDate,
+            LocalDate endDate,
+            int page,
+            int size
+    );
 }
+
+

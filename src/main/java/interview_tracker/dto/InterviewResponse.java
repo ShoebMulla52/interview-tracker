@@ -4,10 +4,10 @@ package interview_tracker.dto;
 
 import interview_tracker.entity.InterviewMode;
 import interview_tracker.entity.InterviewStatus;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -15,12 +15,12 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InterviewRequest {
+public class InterviewResponse {
 
-    @NotBlank(message = "Candidate name is required")
+    private Long id;
+
     private String candidateName;
 
-    @NotBlank(message = "Company name is required")
     private String companyName;
 
     private String interviewSupporter;
@@ -35,13 +35,16 @@ public class InterviewRequest {
 
     //private String mode;
 
-    //private String status;
+   //private String status;
 
     private InterviewMode mode;
-
     private InterviewStatus status;
 
     private String feedback;
 
     private String remarks;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }
