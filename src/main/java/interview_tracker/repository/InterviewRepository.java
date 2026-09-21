@@ -7,10 +7,6 @@ import interview_tracker.entity.Interview;
 import interview_tracker.entity.InterviewMode;
 import interview_tracker.entity.InterviewStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-
-
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -48,6 +44,11 @@ public interface InterviewRepository
             LocalDate startDate,
             LocalDate endDate,
             Pageable pageable
+    );
+
+    long countByInterviewDateBetween(
+            LocalDate startDate,
+            LocalDate endDate
     );
 
 //    long countByStatusIgnoreCase(String status);

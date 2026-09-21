@@ -22,4 +22,11 @@ public class DashboardStatsResponse {
     private long rejected;
 
     private long onHold;
+
+    //interview stats
+    private long thisWeek;
+
+    private long thisMonth;
+
+    private long thisYear;
 }

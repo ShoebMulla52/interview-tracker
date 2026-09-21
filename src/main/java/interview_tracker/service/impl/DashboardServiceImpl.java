@@ -1,12 +1,18 @@
 package interview_tracker.service.impl;
 
 
+
+
 import interview_tracker.dto.DashboardStatsResponse;
 import interview_tracker.entity.InterviewStatus;
 import interview_tracker.repository.InterviewRepository;
 import interview_tracker.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 
 @Service
 @RequiredArgsConstructor
@@ -17,33 +23,73 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public DashboardStatsResponse getDashboardStats() {
 
-        long totalInterviews =
-                interviewRepository.count();
+        LocalDate today = LocalDate.now();
 
-        long scheduled =
-                interviewRepository.countByStatus(
-                        InterviewStatus.SCHEDULED
-                );
+        // This Week: Monday to Sunday
+        LocalDate weekStart = today.with(
+                TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
+        );
 
-        long completed =
-                interviewRepository.countByStatus(
-                        InterviewStatus.COMPLETED
-                );
+        LocalDate weekEnd = today.with(
+                TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)
+        );
 
-        long selected =
-                interviewRepository.countByStatus(
-                        InterviewStatus.SELECTED
-                );
+        // This Month: First day to last day of current month
+        LocalDate monthStart = today.with(
+                TemporalAdjusters.firstDayOfMonth()
+        );
 
-        long rejected =
-                interviewRepository.countByStatus(
-                        InterviewStatus.REJECTED
-                );
+        LocalDate monthEnd = today.with(
+                TemporalAdjusters.lastDayOfMonth()
+        );
 
-        long onHold =
-                interviewRepository.countByStatus(
-                        InterviewStatus.ON_HOLD
-                );
+        // This Year: January 1 to December 31
+        LocalDate yearStart = today.with(
+                TemporalAdjusters.firstDayOfYear()
+        );
+
+        LocalDate yearEnd = today.with(
+                TemporalAdjusters.lastDayOfYear()
+        );
+
+        // Existing dashboard counts
+        long totalInterviews = interviewRepository.count();
+
+        long scheduled = interviewRepository.countByStatus(
+                InterviewStatus.SCHEDULED
+        );
+
+        long completed = interviewRepository.countByStatus(
+                InterviewStatus.COMPLETED
+        );
+
+        long selected = interviewRepository.countByStatus(
+                InterviewStatus.SELECTED
+        );
+
+        long rejected = interviewRepository.countByStatus(
+                InterviewStatus.REJECTED
+        );
+
+        long onHold = interviewRepository.countByStatus(
+                InterviewStatus.ON_HOLD
+        );
+
+        // New date-based interview counts
+        long thisWeek = interviewRepository.countByInterviewDateBetween(
+                weekStart,
+                weekEnd
+        );
+
+        long thisMonth = interviewRepository.countByInterviewDateBetween(
+                monthStart,
+                monthEnd
+        );
+
+        long thisYear = interviewRepository.countByInterviewDateBetween(
+                yearStart,
+                yearEnd
+        );
 
         return DashboardStatsResponse.builder()
                 .totalInterviews(totalInterviews)
@@ -52,6 +98,9 @@ public class DashboardServiceImpl implements DashboardService {
                 .selected(selected)
                 .rejected(rejected)
                 .onHold(onHold)
+                .thisWeek(thisWeek)
+                .thisMonth(thisMonth)
+                .thisYear(thisYear)
                 .build();
     }
 }
