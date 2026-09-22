@@ -1,7 +1,11 @@
 package interview_tracker.service.impl;
 
 
+
+
+
 import interview_tracker.dto.AdminLoginRequest;
+import interview_tracker.dto.ChangePasswordRequest;
 import interview_tracker.dto.LoginResponse;
 import interview_tracker.entity.Admin;
 import interview_tracker.repository.AdminRepository;
@@ -43,5 +47,45 @@ public class AdminServiceImpl implements AdminService {
                 .username(admin.getUsername())
                 .message("Login successful")
                 .build();
+    }
+
+    @Override
+    public void changePassword(
+            String username,
+            ChangePasswordRequest request) {
+
+        // Find logged-in admin
+        Admin admin = adminRepository
+                .findByUsername(username)
+                .orElseThrow(() ->
+                        new RuntimeException("Admin not found"));
+
+        // Verify current password
+        if (!passwordEncoder.matches(
+                request.getCurrentPassword(),
+                admin.getPassword())) {
+
+            throw new RuntimeException(
+                    "Current password is incorrect");
+        }
+
+        // Check new password and confirm password
+        if (!request.getNewPassword().equals(
+                request.getConfirmPassword())) {
+
+            throw new RuntimeException(
+                    "New password and confirm password do not match");
+        }
+
+        // Encode new password using BCrypt
+        String encodedPassword =
+                passwordEncoder.encode(
+                        request.getNewPassword());
+
+        // Update password
+        admin.setPassword(encodedPassword);
+
+        // Save updated admin
+        adminRepository.save(admin);
     }
 }
