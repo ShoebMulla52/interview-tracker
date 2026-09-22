@@ -29,4 +29,12 @@ public class DashboardStatsResponse {
     private long thisMonth;
 
     private long thisYear;
+
+
+    // completed interview stats
+    private long thisWeekCompleted;
+
+    private long thisMonthCompleted;
+
+    private long thisYearCompleted;
 }

@@ -75,7 +75,7 @@ public class DashboardServiceImpl implements DashboardService {
                 InterviewStatus.ON_HOLD
         );
 
-        // New date-based interview counts
+        // Date-based interview counts
         long thisWeek = interviewRepository.countByInterviewDateBetween(
                 weekStart,
                 weekEnd
@@ -91,6 +91,28 @@ public class DashboardServiceImpl implements DashboardService {
                 yearEnd
         );
 
+        // Completed interview counts for each period
+        long thisWeekCompleted =
+                interviewRepository.countByStatusAndInterviewDateBetween(
+                        InterviewStatus.COMPLETED,
+                        weekStart,
+                        weekEnd
+                );
+
+        long thisMonthCompleted =
+                interviewRepository.countByStatusAndInterviewDateBetween(
+                        InterviewStatus.COMPLETED,
+                        monthStart,
+                        monthEnd
+                );
+
+        long thisYearCompleted =
+                interviewRepository.countByStatusAndInterviewDateBetween(
+                        InterviewStatus.COMPLETED,
+                        yearStart,
+                        yearEnd
+                );
+
         return DashboardStatsResponse.builder()
                 .totalInterviews(totalInterviews)
                 .scheduled(scheduled)
@@ -101,6 +123,9 @@ public class DashboardServiceImpl implements DashboardService {
                 .thisWeek(thisWeek)
                 .thisMonth(thisMonth)
                 .thisYear(thisYear)
+                .thisWeekCompleted(thisWeekCompleted)
+                .thisMonthCompleted(thisMonthCompleted)
+                .thisYearCompleted(thisYearCompleted)
                 .build();
     }
 }

@@ -35,6 +35,7 @@ public interface InterviewRepository
             InterviewStatus status,
             Pageable pageable
     );
+
     Page<Interview> findByMode(
             InterviewMode mode,
             Pageable pageable
@@ -52,5 +53,15 @@ public interface InterviewRepository
     );
 
 //    long countByStatusIgnoreCase(String status);
-long countByStatus(InterviewStatus status);
+
+    long countByStatus(
+            InterviewStatus status
+    );
+
+    // Completed interviews between dates
+    long countByStatusAndInterviewDateBetween(
+            InterviewStatus status,
+            LocalDate startDate,
+            LocalDate endDate
+    );
 }
