@@ -64,4 +64,5 @@ public interface InterviewRepository
             LocalDate startDate,
             LocalDate endDate
     );
+
 }

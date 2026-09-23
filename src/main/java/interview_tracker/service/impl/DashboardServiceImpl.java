@@ -14,6 +14,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 
+
+
+
 @Service
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
@@ -27,14 +30,18 @@ public class DashboardServiceImpl implements DashboardService {
 
         // This Week: Monday to Sunday
         LocalDate weekStart = today.with(
-                TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
+                TemporalAdjusters.previousOrSame(
+                        DayOfWeek.MONDAY
+                )
         );
 
         LocalDate weekEnd = today.with(
-                TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)
+                TemporalAdjusters.nextOrSame(
+                        DayOfWeek.SUNDAY
+                )
         );
 
-        // This Month: First day to last day of current month
+        // This Month
         LocalDate monthStart = today.with(
                 TemporalAdjusters.firstDayOfMonth()
         );
@@ -43,7 +50,7 @@ public class DashboardServiceImpl implements DashboardService {
                 TemporalAdjusters.lastDayOfMonth()
         );
 
-        // This Year: January 1 to December 31
+        // This Year
         LocalDate yearStart = today.with(
                 TemporalAdjusters.firstDayOfYear()
         );
@@ -52,80 +59,157 @@ public class DashboardServiceImpl implements DashboardService {
                 TemporalAdjusters.lastDayOfYear()
         );
 
+
         // Existing dashboard counts
-        long totalInterviews = interviewRepository.count();
 
-        long scheduled = interviewRepository.countByStatus(
-                InterviewStatus.SCHEDULED
-        );
+        long totalInterviews =
+                interviewRepository.count();
 
-        long completed = interviewRepository.countByStatus(
-                InterviewStatus.COMPLETED
-        );
+        long scheduled =
+                interviewRepository.countByStatus(
+                        InterviewStatus.SCHEDULED
+                );
 
-        long selected = interviewRepository.countByStatus(
-                InterviewStatus.SELECTED
-        );
+        long completed =
+                interviewRepository.countByStatus(
+                        InterviewStatus.COMPLETED
+                );
 
-        long rejected = interviewRepository.countByStatus(
-                InterviewStatus.REJECTED
-        );
+        long selected =
+                interviewRepository.countByStatus(
+                        InterviewStatus.SELECTED
+                );
 
-        long onHold = interviewRepository.countByStatus(
-                InterviewStatus.ON_HOLD
-        );
+        long rejected =
+                interviewRepository.countByStatus(
+                        InterviewStatus.REJECTED
+                );
 
-        // Date-based interview counts
-        long thisWeek = interviewRepository.countByInterviewDateBetween(
-                weekStart,
-                weekEnd
-        );
+        long onHold =
+                interviewRepository.countByStatus(
+                        InterviewStatus.ON_HOLD
+                );
 
-        long thisMonth = interviewRepository.countByInterviewDateBetween(
-                monthStart,
-                monthEnd
-        );
 
-        long thisYear = interviewRepository.countByInterviewDateBetween(
-                yearStart,
-                yearEnd
-        );
+        // Interview date counts
 
-        // Completed interview counts for each period
-        long thisWeekCompleted =
-                interviewRepository.countByStatusAndInterviewDateBetween(
-                        InterviewStatus.COMPLETED,
+        long thisWeek =
+                interviewRepository.countByInterviewDateBetween(
                         weekStart,
                         weekEnd
                 );
 
-        long thisMonthCompleted =
-                interviewRepository.countByStatusAndInterviewDateBetween(
-                        InterviewStatus.COMPLETED,
+        long thisMonth =
+                interviewRepository.countByInterviewDateBetween(
                         monthStart,
                         monthEnd
                 );
 
-        long thisYearCompleted =
-                interviewRepository.countByStatusAndInterviewDateBetween(
-                        InterviewStatus.COMPLETED,
+        long thisYear =
+                interviewRepository.countByInterviewDateBetween(
                         yearStart,
                         yearEnd
                 );
 
+
+        // Completed counts
+
+        long thisWeekCompleted =
+                interviewRepository
+                        .countByStatusAndInterviewDateBetween(
+                                InterviewStatus.COMPLETED,
+                                weekStart,
+                                weekEnd
+                        );
+
+        long thisMonthCompleted =
+                interviewRepository
+                        .countByStatusAndInterviewDateBetween(
+                                InterviewStatus.COMPLETED,
+                                monthStart,
+                                monthEnd
+                        );
+
+        long thisYearCompleted =
+                interviewRepository
+                        .countByStatusAndInterviewDateBetween(
+                                InterviewStatus.COMPLETED,
+                                yearStart,
+                                yearEnd
+                        );
+
+
+        // Selected counts
+
+        long thisWeekSelected =
+                interviewRepository
+                        .countByStatusAndInterviewDateBetween(
+                                InterviewStatus.SELECTED,
+                                weekStart,
+                                weekEnd
+                        );
+
+        long thisMonthSelected =
+                interviewRepository
+                        .countByStatusAndInterviewDateBetween(
+                                InterviewStatus.SELECTED,
+                                monthStart,
+                                monthEnd
+                        );
+
+        long thisYearSelected =
+                interviewRepository
+                        .countByStatusAndInterviewDateBetween(
+                                InterviewStatus.SELECTED,
+                                yearStart,
+                                yearEnd
+                        );
+
+
         return DashboardStatsResponse.builder()
+
                 .totalInterviews(totalInterviews)
+
                 .scheduled(scheduled)
+
                 .completed(completed)
+
                 .selected(selected)
+
                 .rejected(rejected)
+
                 .onHold(onHold)
+
                 .thisWeek(thisWeek)
+
                 .thisMonth(thisMonth)
+
                 .thisYear(thisYear)
-                .thisWeekCompleted(thisWeekCompleted)
-                .thisMonthCompleted(thisMonthCompleted)
-                .thisYearCompleted(thisYearCompleted)
+
+                .thisWeekCompleted(
+                        thisWeekCompleted
+                )
+
+                .thisMonthCompleted(
+                        thisMonthCompleted
+                )
+
+                .thisYearCompleted(
+                        thisYearCompleted
+                )
+
+                .thisWeekSelected(
+                        thisWeekSelected
+                )
+
+                .thisMonthSelected(
+                        thisMonthSelected
+                )
+
+                .thisYearSelected(
+                        thisYearSelected
+                )
+
                 .build();
     }
 }
