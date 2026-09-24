@@ -7,11 +7,13 @@ package interview_tracker.service;
 
 import interview_tracker.dto.InterviewRequest;
 import interview_tracker.dto.InterviewResponse;
+import interview_tracker.entity.Interview;
 import interview_tracker.entity.InterviewMode;
 import interview_tracker.entity.InterviewStatus;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface InterviewService {
 
@@ -68,6 +70,11 @@ public interface InterviewService {
             LocalDate endDate,
             int page,
             int size
+    );
+
+    List<Interview> getCandidateCompanyRounds(
+            String candidateName,
+            String companyName
     );
 }
 

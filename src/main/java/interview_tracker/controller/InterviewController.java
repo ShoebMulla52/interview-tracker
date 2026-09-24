@@ -6,6 +6,7 @@ package interview_tracker.controller;
 import interview_tracker.dto.ApiResponse;
 import interview_tracker.dto.InterviewRequest;
 import interview_tracker.dto.InterviewResponse;
+import interview_tracker.entity.Interview;
 import interview_tracker.entity.InterviewMode;
 import interview_tracker.entity.InterviewStatus;
 import interview_tracker.service.InterviewService;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/interviews")
@@ -218,4 +220,21 @@ public class InterviewController {
                         .build()
         );
     }
+
+
+    // popup controller
+    @GetMapping("/candidate/{candidateName}/company/{companyName}")
+    public ResponseEntity<List<Interview>> getCandidateCompanyRounds(
+            @PathVariable String candidateName,
+            @PathVariable String companyName
+    ) {
+
+        return ResponseEntity.ok(
+                interviewService.getCandidateCompanyRounds(
+                        candidateName,
+                        companyName
+                )
+        );
+    }
+
 }

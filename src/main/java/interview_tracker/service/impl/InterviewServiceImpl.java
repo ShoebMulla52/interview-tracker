@@ -13,6 +13,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -202,6 +203,20 @@ public class InterviewServiceImpl implements InterviewService {
                         pageable
                 )
                 .map(this::mapToResponse);
+    }
+
+  // PopUp Implementaion
+    @Override
+    public List<Interview> getCandidateCompanyRounds(
+            String candidateName,
+            String companyName
+    ) {
+
+        return interviewRepository
+                .findByCandidateNameIgnoreCaseAndCompanyNameIgnoreCaseOrderByInterviewDateAsc(
+                        candidateName,
+                        companyName
+                );
     }
 
     private InterviewResponse mapToResponse(

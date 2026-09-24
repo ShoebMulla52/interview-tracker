@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 public interface InterviewRepository
@@ -63,6 +64,12 @@ public interface InterviewRepository
             InterviewStatus status,
             LocalDate startDate,
             LocalDate endDate
+    );
+
+    //Pop message
+    List<Interview> findByCandidateNameIgnoreCaseAndCompanyNameIgnoreCaseOrderByInterviewDateAsc(
+            String candidateName,
+            String companyName
     );
 
 }
