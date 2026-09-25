@@ -165,6 +165,29 @@ public class DashboardServiceImpl implements DashboardService {
                                 yearEnd
                         );
 
+        long thisWeekRejected =
+                interviewRepository.countByStatusAndInterviewDateBetween(
+                        InterviewStatus.REJECTED,
+                        weekStart,
+                        weekEnd
+                );
+
+
+        long thisMonthRejected =
+                interviewRepository.countByStatusAndInterviewDateBetween(
+                        InterviewStatus.REJECTED,
+                        monthStart,
+                        monthEnd
+                );
+
+
+        long thisYearRejected =
+                interviewRepository.countByStatusAndInterviewDateBetween(
+                        InterviewStatus.REJECTED,
+                        yearStart,
+                        yearEnd
+                );
+
 
         return DashboardStatsResponse.builder()
 
@@ -209,6 +232,10 @@ public class DashboardServiceImpl implements DashboardService {
                 .thisYearSelected(
                         thisYearSelected
                 )
+                // rejected interview
+                .thisWeekRejected(thisWeekRejected)
+                .thisMonthRejected(thisMonthRejected)
+                .thisYearRejected(thisYearRejected)
 
                 .build();
     }

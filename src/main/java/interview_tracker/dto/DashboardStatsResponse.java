@@ -44,4 +44,11 @@ public class DashboardStatsResponse {
     private long thisMonthSelected;
 
     private long thisYearSelected;
+
+    // Rejected interview stats
+    private long thisWeekRejected;
+
+    private long thisMonthRejected;
+
+    private long thisYearRejected;
 }
