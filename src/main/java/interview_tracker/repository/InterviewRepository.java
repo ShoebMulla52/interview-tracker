@@ -15,61 +15,68 @@ import java.util.List;
 
 
 public interface InterviewRepository
-        extends JpaRepository<Interview, Long> {
+            extends JpaRepository<Interview, Long> {
 
-    Page<Interview> findByCandidateNameContainingIgnoreCase(
-            String candidateName,
-            Pageable pageable
-    );
+        Page<Interview> findByCandidateNameContainingIgnoreCase(
+                String candidateName,
+                Pageable pageable
+        );
 
-    Page<Interview> findByCompanyNameContainingIgnoreCase(
-            String companyName,
-            Pageable pageable
-    );
+        Page<Interview> findByCompanyNameContainingIgnoreCase(
+                String companyName,
+                Pageable pageable
+        );
 
-//    Page<Interview> findByStatusIgnoreCase(
-//            String status,
-//            Pageable pageable
-//    );
+    //    Page<Interview> findByStatusIgnoreCase(
+    //            String status,
+    //            Pageable pageable
+    //    );
 
-    Page<Interview> findByStatus(
+        Page<Interview> findByStatus(
+                InterviewStatus status,
+                Pageable pageable
+        );
+
+        Page<Interview> findByMode(
+                InterviewMode mode,
+                Pageable pageable
+        );
+
+        Page<Interview> findByInterviewDateBetween(
+                LocalDate startDate,
+                LocalDate endDate,
+                Pageable pageable
+        );
+
+        long countByInterviewDateBetween(
+                LocalDate startDate,
+                LocalDate endDate
+        );
+
+    //    long countByStatusIgnoreCase(String status);
+
+        long countByStatus(
+                InterviewStatus status
+        );
+
+        // Completed interviews between dates
+        long countByStatusAndInterviewDateBetween(
+                InterviewStatus status,
+                LocalDate startDate,
+                LocalDate endDate
+        );
+
+        //Pop message
+        List<Interview> findByCandidateNameIgnoreCaseAndCompanyNameIgnoreCaseOrderByInterviewDateAsc(
+                String candidateName,
+                String companyName
+        );
+
+
+    //its for email service
+    List<Interview> findByStatusAndInterviewDate(
             InterviewStatus status,
-            Pageable pageable
+            LocalDate interviewDate
     );
 
-    Page<Interview> findByMode(
-            InterviewMode mode,
-            Pageable pageable
-    );
-
-    Page<Interview> findByInterviewDateBetween(
-            LocalDate startDate,
-            LocalDate endDate,
-            Pageable pageable
-    );
-
-    long countByInterviewDateBetween(
-            LocalDate startDate,
-            LocalDate endDate
-    );
-
-//    long countByStatusIgnoreCase(String status);
-
-    long countByStatus(
-            InterviewStatus status
-    );
-
-    // Completed interviews between dates
-    long countByStatusAndInterviewDateBetween(
-            InterviewStatus status,
-            LocalDate startDate,
-            LocalDate endDate
-    );
-
-    //Pop message
-    List<Interview> findByCandidateNameIgnoreCaseAndCompanyNameIgnoreCaseOrderByInterviewDateAsc(
-            String candidateName,
-            String companyName
-    );
-
-}
+    }
