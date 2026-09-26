@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,12 +18,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
+
+import java.io.IOException;
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final AdminUserDetailsService adminUserDetailsService;
+    private final UserUserDetailsService userUserDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -52,22 +58,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .getContext()
                             .getAuthentication() == null) {
 
-                UserDetails userDetails =
-                        userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = null;
 
-                if (jwtService.isTokenValid(token)) {
+                // First check Admin
+                try {
+                    userDetails =
+                            adminUserDetailsService
+                                    .loadUserByUsername(username);
+                } catch (Exception ignored) {
+                }
 
-                    UsernamePasswordAuthenticationToken authentication =
+                // If not Admin, check User
+                if (userDetails == null) {
+                    try {
+                        userDetails =
+                                userUserDetailsService
+                                        .loadUserByUsername(username);
+                    } catch (Exception ignored) {
+                    }
+                }
+
+                if (userDetails != null &&
+                        jwtService.isTokenValid(token)) {
+
+                    Authentication authentication =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
                                     null,
                                     userDetails.getAuthorities()
                             );
 
-                    authentication.setDetails(
-                            new WebAuthenticationDetailsSource()
-                                    .buildDetails(request)
-                    );
+                    ((UsernamePasswordAuthenticationToken)
+                            authentication)
+                            .setDetails(
+                                    new WebAuthenticationDetailsSource()
+                                            .buildDetails(request)
+                            );
 
                     SecurityContextHolder
                             .getContext()
@@ -76,7 +102,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
-            // Invalid token - request will remain unauthenticated
+            // Invalid token - request remains unauthenticated
         }
 
         filterChain.doFilter(request, response);

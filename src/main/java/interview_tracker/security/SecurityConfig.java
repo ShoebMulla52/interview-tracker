@@ -65,7 +65,8 @@ public class SecurityConfig {
                         // Public APIs
                         .requestMatchers(
                                 "/api/admin/login",
-                                "/api/users/signup"
+                                "/api/users/signup",
+                                "/api/users/login"
                         ).permitAll()
 
                         // Add Interview - ADMIN + USER
