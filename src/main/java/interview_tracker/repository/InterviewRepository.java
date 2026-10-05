@@ -73,7 +73,7 @@ public interface InterviewRepository
         );
 
 
-    //its for email service
+    // its for email service
     List<Interview> findByStatusAndInterviewDate(
             InterviewStatus status,
             LocalDate interviewDate

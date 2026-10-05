@@ -75,6 +75,10 @@ public class SecurityConfig {
                                 "/api/interviews"
                         ).hasAnyRole("ADMIN", "USER")
 
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/users/change-password"
+                        ).hasRole("USER")
                         // Everything else - ADMIN only for now
                         .anyRequest().hasRole("ADMIN")
                 )
